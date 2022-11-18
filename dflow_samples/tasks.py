@@ -1,16 +1,8 @@
-from collections import namedtuple
 from fire import Fire
-from typing import Dict, Union, List, Tuple, Any, TypeVar, Optional
+from .dflow_adapter import Result, dflow_task
 
 
-# Artifects should be string, list of string or string dict of artifects
-Artifects = Union[Dict[str, Union['Artifects', str, List[str]]], str, List[str]]
-
-T = TypeVar('T')
-# Result is a tumple of (value, artifects), value must be serializable
-Result = Tuple[Optional[T], Artifects]
-
-
+@dflow_task
 def gen_files(n=10, prefix='output-', text='hello world') -> Result:
     files = []
     for i in range(n):
@@ -18,9 +10,10 @@ def gen_files(n=10, prefix='output-', text='hello world') -> Result:
         with open(file, 'w') as f:
             f.write(text)
         files.append(file)
-    return None, files
+    return Result(artifects=files)
 
 
+@dflow_task
 def cat_files(files):
     for file in files:
         with open(file, 'r') as f:
