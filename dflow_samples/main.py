@@ -17,8 +17,6 @@ class Ai2Nmr:
     def __init__(self, elements: List[str], soap_expr=DEFAULT_SOAP_EXPRESSION):
         self._elements = elements
         self._soap_expr = soap_expr
-        self._train_params = None
-        print(elements)
 
 
     @dflow_task
