@@ -278,7 +278,7 @@ class NMRModel():
         self.dataset = self.datasets[0]
         return self.datasets
 
-    def train(self, epochs=EPOCHS, batch_size=BATCH_SIZE, callback_class=TQDMProgressBar(show_epoch_progress=False), filename=None, save_weights=False):
+    def train(self, epochs=EPOCHS, batch_size=BATCH_SIZE, callback_class=TQDMProgressBar(show_epoch_progress=False), out_dir=None, save_weights=False):
         """
         Training NN-NMR Model
 
@@ -297,25 +297,21 @@ class NMRModel():
         # early stop, 防止过拟合，patience 值用来检查改进 epochs 的数量
         early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=20)
         history = self.model.fit(self.dataset[0], self.dataset[2], validation_data=(self.dataset[1], self.dataset[3]), epochs=epochs, verbose=0, callbacks=[early_stop, callback_class], batch_size=batch_size)
-        if filename:
+        if out_dir:
+            model_path = os.path.join(out_dir, 'model')
             if save_weights:
-                self.model.save_weights(filename)
+                self.model.save_weights(model_path)
             else:
-                self.model.save(filename)
-            pd.DataFrame(history.history).to_pickle(filename + '_hist.pkl')
+                self.model.save(model_path)
+            pd.DataFrame(history.history).to_pickle(os.path.join(out_dir,'history.pkl'))
         return history
 
-    def train_model(self, test_size=0.2, train_size=None, random_state=None, shuffle=True, stratify=None, epochs=EPOCHS, batch_size=BATCH_SIZE, callback_class=TQDMProgressBar(show_epoch_progress=False), filename=None, save_weights=False, show_ax=False):
+    def train_model(self, test_size=0.2, train_size=None, random_state=None, shuffle=True, stratify=None, epochs=EPOCHS, batch_size=BATCH_SIZE, callback_class=TQDMProgressBar(show_epoch_progress=False), out_dir=None, save_weights=False):
         self.train_test_split(test_size, train_size, random_state, shuffle, stratify)
-        history = self.train(epochs, batch_size, callback_class, filename, save_weights)
-        foldername = os.path.dirname(filename)
-        rmse_testdata = self.get_rmse()
-        np.save(f'{foldername}/rmse_and_test_data.npy', rmse_testdata)
-        if show_ax:
-            ax = plot_dft_validation(dft=rmse_testdata['test_y'], dnns=rmse_testdata['test_y_pred'], rmse=rmse_testdata['rmse'])
-            return history, ax
-        else:
-            return history
+        history = self.train(epochs, batch_size, callback_class, out_dir, save_weights)
+        rmse = self.get_rmse()
+        np.save(os.path.join(out_dir, 'regression-loss.npy'), rmse)
+        return history
 
     def get_rmse(self):
         test_pred = self.model.predict(self.dataset[1])
@@ -332,7 +328,7 @@ class NMRModel():
         rmse_testdatas = []
         for i, dataset in enumerate(tqdm(datasets, desc='models')):
             self.model = self.build_model()
-            history = self.train_model(filename=f'{foldername}/model_{i}')
+            history = self.train_model(out_dir=f'{foldername}/model_{i}')
             hists.append(history)
             rmse_testdatas.append(self.get_rmse())
         np.save(f'{foldername}/rmses_and_test_data.npy', rmse_testdatas)
