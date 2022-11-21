@@ -7,9 +7,18 @@ readme = "README.md"
 packages = [{include = "dflow_samples"}]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.8, <3.11"
 pydflow = "^1.6.5"
 fire = "^0.4.0"
+numpy = "^1.23.5"
+pandas = "^1.5.1"
+matplotlib = "^3.6.2"
+scikit-learn = "^1.1.3"
+tqdm = "^4.64.1"
+tensorflow = "^2.11.0"
+tensorflow-addons = "^0.18.0"
+ase = "^3.22.1"
+quippy-ase = "^0.9.10"
 
 
 [[tool.poetry.source]]
