@@ -8,7 +8,7 @@ DFLOW_DISABLE = '1' == os.getenv('DFLOW_DISABLE', None)
 
 Artifects = Union[Dict[str, Union['Artifects', str, List[str]]], str, List[str]]
 
-def dflow_task(fn, result_file='argo_result.json', error_file='argo_error.txt'):
+def dflow_task(fn, result_file='dflow_result.json',error_file='dflow_error.txt'):
     if DFLOW_DISABLE:
         return fn
     @wraps(fn)
@@ -17,10 +17,11 @@ def dflow_task(fn, result_file='argo_result.json', error_file='argo_error.txt'):
             ret = fn(*args, **kwargs)
             _save_json(ret.value, result_file)
             return ret
-        except:
+        except Exception as e:
             tb = traceback.format_exc()
             with open(error_file, 'w') as f:
                 f.write(tb)
+            raise e
     return wrapped_fn
 
 

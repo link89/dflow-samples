@@ -19,18 +19,16 @@ class Ai2Nmr:
         self._soap_expr = soap_expr
 
 
-    @dflow_task
     def train_model(self, outcar_folders, out_dir='./out/', html_report=False,
                     test_size=0.2, train_size=None,
                     random_state=None, shuffle=True, stratify=None,
                     epochs=DEFAULT_EPOCHS, batch_size=DEFAULT_BATCH_SIZE):
         os.makedirs(out_dir, exist_ok=True)
-
         dfs = pd.DataFrame()
-        for foldername in outcar_folders:
-            outcar_list = os.listdir(foldername)
+        for folder in outcar_folders:
+            outcar_list = os.listdir(folder)
             outcar_list.sort(key=lambda x: int(x.lstrip('OUTCAR')))
-            df = get_df_from_outcars([os.path.join(foldername, outcar)
+            df = get_df_from_outcars([os.path.join(folder, outcar)
                                       for outcar in outcar_list], expression=self._soap_expr, elements=self._elements)
             dfs = pd.concat([dfs, df])
 
@@ -43,7 +41,6 @@ class Ai2Nmr:
             pass  # TODO
 
 
-    @dflow_task
     def predict(self, traj_path: str, model='./out/model/'):
         test_atoms = read(traj_path)
         nmr = NMRModel()
