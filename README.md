@@ -21,7 +21,7 @@ python -m dflow_samples.main train_model --elements=[Na] --outcar_folders="['./d
 python -m dflow_samples.main predict --elements=[Na] --traj_path=./data/nmr/predict_fcshifts_example.xyz --model=./out/model 
 ```
 
-### 在Docker内执行
+### 通过 Docker 执行
 
 为支持在 dflow 执行，该项目提供了Dockerfile用于构建用于代码执行的容器，使用前先使用以下命令确保容器被正确构建
 
@@ -37,7 +37,7 @@ docker build -t dflow-nmr .
  docker run -v ./data/nmr:/data dflow-nmr python -m dflow_samples.main predict --elements=[Na] --traj_path=/data/predict_fcshifts_example.xyz --model=/data/out/model
 ```
 
-### 在 Bohrium 平台上执行
+### 通过 Singuliarty 执行
 
 为支持在 Bohrium 平台运行，首先需要将 docker 镜像转换为 singuliarity 镜像并上传到嘉庚超算的容器目录中。
 
@@ -60,6 +60,9 @@ singularity exec --bind ./data/nmr:/data dflow_nmr.sif python -m dflow_samples.m
 singularity exec --bind ./data/nmr:/data dflow_nmr.sif python -m dflow_samples.main predict --elements=[Na] --traj_path=/data/predict_fcshifts_example.xyz --model=/data/out/model
 ```
 
+
+### 在 Bohrium 平台上执行
+
 为能在 Bohrium 平台上使用该镜像，需要将其复制到指定目录下。
 
-### 通过 dflow 执行工作流
+TODO: dflow 脚本
