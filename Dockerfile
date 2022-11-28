@@ -10,7 +10,7 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock README.md .
 COPY dflow_samples dflow_samples
 
-ENV PYTHONPATH=${PYTHONPATH}:/usr/lib/python3.8/site-packages:${PWD}
+ENV PYTHONPATH=${PYTHONPATH}:/usr/lib/python3.8/site-packages:/app
 
 RUN poetry config virtualenvs.create false
 RUN poetry config installer.max-workers 4
