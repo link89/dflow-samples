@@ -10,7 +10,7 @@ import getpass
 
 container_image = "registry.dp.tech/dptech/dflow-nmr:v0.1.2"
 
-# Step 1: train model
+## Template: train model
 nmr_train_script = ' '.join([
     "python -m dflow_samples.main train_model",
     "--elements={{inputs.parameters.elements}}",
@@ -19,7 +19,7 @@ nmr_train_script = ' '.join([
 ])
 print(nmr_train_script)
 nmr_train_template = ShellOPTemplate(
-    name="nrm-train",
+    name="nrm-train-template",
     image=container_image,
     script=nmr_train_script,
 )
@@ -28,7 +28,7 @@ nmr_train_template.inputs.artifacts = {"data": InputArtifact(path="/tmp/data")}
 nmr_train_template.outputs.artifacts = {"out": OutputArtifact(path="/tmp/out")}
 
 
-# Step 2: predict
+# Template: predict
 nmr_predict_script = ' '.join([
     "python -m dflow_samples.main predict",
     "--elements={{inputs.parameters.elements}}",
@@ -37,7 +37,7 @@ nmr_predict_script = ' '.join([
 ])
 print(nmr_predict_script)
 nmr_predict_template = ShellOPTemplate(
-    name="nrm-predict",
+    name="nrm-predict-template",
     image=container_image,
     script=nmr_predict_script,
 )
@@ -58,7 +58,7 @@ def run_nmr_workflow(elements: List[str], data: str, executor):
     quoted_elements = shlex.quote(json.dumps(elements))  # list args needs to be quoted due to fire
 
     nmr_train = Step(
-        name="nmr-train",
+        name="nmr-train-step",
         template=nmr_train_template,
         parameters={"elements": quoted_elements},
         artifacts={"data": data_artifact},
@@ -67,7 +67,7 @@ def run_nmr_workflow(elements: List[str], data: str, executor):
     wf.add(nmr_train)
 
     nmr_predict = Step(
-        name="nmr-predict",
+        name="nmr-predict-step",
         template=nmr_predict_template,
         parameters={"elements": quoted_elements},
         artifacts={"data": data_artifact, 'out': nmr_train.outputs.artifacts['out']},
@@ -78,7 +78,7 @@ def run_nmr_workflow(elements: List[str], data: str, executor):
 
 
 ## Run workflow
-if __name__ == '__main__':
+def main():
     dispatcher_executor = DispatcherExecutor(
         machine_dict={
             "batch_type": "Bohrium",
@@ -97,3 +97,5 @@ if __name__ == '__main__':
         },
     )
     run_nmr_workflow(elements=['Na'], data='./data/nmr', executor=dispatcher_executor)
+
+main()
