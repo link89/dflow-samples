@@ -14,7 +14,7 @@ container_image = "registry.dp.tech/dptech/dflow-nmr:v0.1.2"
 nmr_train_script = ' '.join([
     "python -m dflow_samples.main train_model",
     "--elements={{inputs.parameters.elements}}",
-    "--outcar_folders_dir=/tmp/data/nmr/train",
+    "--outcar_folders_dir=/tmp/data/train",
     "--out_dir=/tmp/out"
 ])
 nmr_train_template = ShellOPTemplate(
@@ -31,7 +31,7 @@ nmr_train_template.outputs.artifacts = {"out": OutputArtifact(path="/tmp/out")}
 nmr_predict_script = ' '.join([
     "python -m dflow_samples.main predict",
     "--elements={{inputs.parameters.elements}}",
-    "--traj_path=/tmp/data/nmr/predict_fcshifts_example.xyz",
+    "--traj_path=/tmp/data/predict_fcshifts_example.xyz",
     "--model=/tmp/out/model"
 ])
 nmr_predict_template = ShellOPTemplate(
