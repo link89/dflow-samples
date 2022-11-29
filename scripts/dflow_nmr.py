@@ -33,7 +33,7 @@ nmr_predict_script = ' '.join([
     "--elements={{inputs.parameters.elements}}",
     "--traj_path=/tmp/data/predict_fcshifts_example.xyz",
     "--model=/tmp/out/model",
-    "&& mv ./dflow_result.json /tmp/"
+    "> /tmp/result.txt"
 ])
 nmr_predict_template = ShellOPTemplate(
     name="nrm-predict-template",
@@ -46,7 +46,7 @@ nmr_predict_template.inputs.artifacts = {
     "out": InputArtifact(path="/tmp/out"),
 }
 nmr_predict_template.outputs.parameters = {
-    "result": OutputParameter(value_from_path="/tmp/dflow_result.json")
+    "result": OutputParameter(value_from_path="/tmp/result.txt")
 }
 
 
