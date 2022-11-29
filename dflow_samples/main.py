@@ -19,11 +19,16 @@ class Ai2Nmr:
         self._soap_expr = soap_expr
 
 
-    def train_model(self, outcar_folders, out_dir='./out/', html_report=False,
+    def train_model(self, outcar_folders=None, outcar_folders_dir=None, out_dir='./out/',
                     test_size=0.2, train_size=None,
                     random_state=None, shuffle=True, stratify=None,
                     epochs=DEFAULT_EPOCHS, batch_size=DEFAULT_BATCH_SIZE):
         os.makedirs(out_dir, exist_ok=True)
+
+        if outcar_folders:
+            assert outcar_folders_dir, 'one of outcar_folders or outcar_folders_dir must be set'
+            outcar_folders = [os.path.join(outcar_folders_dir, folder)  for folder in os.listdir(outcar_folders_dir)]
+
         dfs = pd.DataFrame()
         for folder in outcar_folders:
             outcar_list = os.listdir(folder)
@@ -37,10 +42,9 @@ class Ai2Nmr:
                                              test_size=test_size, train_size=train_size,
                                              random_state=random_state, shuffle=shuffle, stratify=stratify,
                                              epochs=epochs, batch_size=batch_size)
-        if html_report:
-            pass  # TODO
 
 
+    @dflow_task
     def predict(self, traj_path: str, model='./out/model/'):
         test_atoms = read(traj_path)
         nmr = NMRModel()
