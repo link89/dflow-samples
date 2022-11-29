@@ -44,7 +44,6 @@ class Ai2Nmr:
                                              epochs=epochs, batch_size=batch_size)
 
 
-    @dflow_task
     def predict(self, traj_path: str, model='./out/model/'):
         test_atoms = read(traj_path)
         nmr = NMRModel()
