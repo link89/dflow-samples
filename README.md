@@ -37,11 +37,11 @@ docker build -t dflow-nmr .
  docker run -v ./data/nmr:/data dflow-nmr python -m dflow_samples.main predict --elements=[Na] --traj_path=/data/predict_fcshifts_example.xyz --model=/data/out/model
 ```
 
-### 通过 Singuliarty 执行
+### 通过 Singularity 执行
 
-为支持在 Bohrium 平台运行，首先需要将 docker 镜像转换为 singuliarity 镜像并上传到嘉庚超算的容器目录中。
+为支持在 Bohrium 平台运行，首先需要将 docker 镜像转换为 singularity 镜像并上传到嘉庚超算的容器目录中。
 
-在本地构建镜像可以使用 conda 安装 singluarity的运行时:
+在本地构建镜像可以使用 conda 安装 singularity的运行时:
 ```bash
 conda install -c conda-forge singularity
 ```
