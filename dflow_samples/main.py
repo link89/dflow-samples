@@ -25,7 +25,7 @@ class Ai2Nmr:
                     epochs=DEFAULT_EPOCHS, batch_size=DEFAULT_BATCH_SIZE):
         os.makedirs(out_dir, exist_ok=True)
 
-        if outcar_folders:
+        if not outcar_folders:
             assert outcar_folders_dir, 'one of outcar_folders or outcar_folders_dir must be set'
             outcar_folders = [os.path.join(outcar_folders_dir, folder)  for folder in os.listdir(outcar_folders_dir)]
 
