@@ -15,7 +15,7 @@ def dflow_task(fn, result_file='dflow_result.json',error_file='dflow_error.txt')
     def wrapped_fn(*args, **kwargs):
         try:
             ret = fn(*args, **kwargs)
-            _save_json(ret.value, result_file)
+            _save_json(ret, result_file)
             return ret
         except Exception as e:
             tb = traceback.format_exc()
