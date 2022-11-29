@@ -10,7 +10,7 @@ import getpass
 
 container_image = "registry.dp.tech/dptech/dflow-nmr:v0.1.2"
 
-## Template: train model
+# Template: train model
 nmr_train_script = ' '.join([
     "python -m dflow_samples.main train_model",
     "--elements={{inputs.parameters.elements}}",
@@ -32,7 +32,8 @@ nmr_predict_script = ' '.join([
     "python -m dflow_samples.main predict",
     "--elements={{inputs.parameters.elements}}",
     "--traj_path=/tmp/data/predict_fcshifts_example.xyz",
-    "--model=/tmp/out/model"
+    "--model=/tmp/out/model",
+    "&& mv ./dflow_result.json /tmp/"
 ])
 nmr_predict_template = ShellOPTemplate(
     name="nrm-predict-template",
@@ -44,8 +45,12 @@ nmr_predict_template.inputs.artifacts = {
     "data": InputArtifact(path="/tmp/data"),
     "out": InputArtifact(path="/tmp/out"),
 }
+nmr_predict_template.outputs.parameters = {
+    "result": OutputParameter(value_from_path="/tmp/dflow_result.json")
+}
 
-## Build workflow
+
+# Build workflow
 
 def run_nmr_workflow(elements: List[str], data: str, executor):
     wf = Workflow(name="nmr-workflow")
@@ -53,7 +58,8 @@ def run_nmr_workflow(elements: List[str], data: str, executor):
     # data_artifact = upload_artifact(data)
     data_artifact = S3Artifact(key=upload_s3(data))
 
-    quoted_elements = shlex.quote(json.dumps(elements))  # list args needs to be quoted due to fire
+    # list args needs to be quoted due to fire
+    quoted_elements = shlex.quote(json.dumps(elements))
 
     nmr_train = Step(
         name="nmr-train-step",
@@ -68,14 +74,15 @@ def run_nmr_workflow(elements: List[str], data: str, executor):
         name="nmr-predict-step",
         template=nmr_predict_template,
         parameters={"elements": quoted_elements},
-        artifacts={"data": data_artifact, 'out': nmr_train.outputs.artifacts['out']},
+        artifacts={"data": data_artifact,
+                   'out': nmr_train.outputs.artifacts['out']},
         executor=executor,
     )
     wf.add(nmr_predict)
     wf.submit()
 
 
-## Run workflow
+# Run workflow
 def main():
     dispatcher_executor = DispatcherExecutor(
         image="registry.dp.tech/deepmodeling/dpdispatcher:latest",
@@ -95,6 +102,8 @@ def main():
             },
         },
     )
-    run_nmr_workflow(elements=['Na'], data='./nmr', executor=dispatcher_executor)
+    run_nmr_workflow(elements=['Na'], data='./nmr',
+                     executor=dispatcher_executor)
+
 
 main()
