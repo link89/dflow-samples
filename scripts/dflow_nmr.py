@@ -63,7 +63,7 @@ def run_nmr_workflow(elements: List[str], data: str, executor):
     # upload input data to s3
     data_artifact = S3Artifact(key=upload_s3(data))
 
-    # list args needs to be quoted due to fire
+    # list args needs to be quoted due to limitation of fire
     quoted_elements = shlex.quote(json.dumps(elements))
 
     nmr_train = Step(
