@@ -11,8 +11,8 @@ import getpass
 container_image = "registry.dp.tech/dptech/dflow-nmr:v0.1.2"
 program_id = 11035
 
-email = input('Email')
-password = getpass.getpass('Password')
+email = input('Email: ')
+password = getpass.getpass('Password: ')
 
 # Template: train model
 nmr_train_script = ' '.join([
