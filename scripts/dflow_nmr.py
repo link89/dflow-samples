@@ -33,6 +33,7 @@ nmr_train_template.outputs.artifacts = {"out": OutputArtifact(path="/tmp/out")}
 
 # Template: predict
 nmr_predict_script = ' '.join([
+    "DFLOW_DISABLE=1",
     "python -m dflow_samples.main predict",
     "--elements={{inputs.parameters.elements}}",
     "--traj_path=/tmp/data/predict_fcshifts_example.xyz",
