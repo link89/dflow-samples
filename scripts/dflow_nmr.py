@@ -9,6 +9,10 @@ import json
 import getpass
 
 container_image = "registry.dp.tech/dptech/dflow-nmr:v0.1.2"
+program_id = 11035
+
+email = input('Email')
+password = getpass.getpass('Password')
 
 # Template: train model
 nmr_train_script = ' '.join([
@@ -55,7 +59,7 @@ nmr_predict_template.outputs.parameters = {
 def run_nmr_workflow(elements: List[str], data: str, executor):
     wf = Workflow(name="nmr-workflow")
 
-    # data_artifact = upload_artifact(data)
+    # upload input data to s3
     data_artifact = S3Artifact(key=upload_s3(data))
 
     # list args needs to be quoted due to fire
@@ -90,9 +94,9 @@ def main():
             "batch_type": "Bohrium",
             "context_type": "Bohrium",
             "remote_profile": {
-                "email": "xuweihong.cn@xmu.edu.cn",
-                "password": getpass.getpass("password:"),
-                "program_id": 11035,
+                "email": email,
+                "password": password,
+                "program_id": program_id,
                 "ondemand": 1,
                 "input_data": {
                     "job_type": "container",
